@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#04070d">
+    <title>TRADE X VISHAL · Binary & Binomo Signals</title>
+
+    <style>
+        :root {
+            --bg-void: #04070d;
+            --bull-green: #00e676;
+            --bull-dark: #00a152;
+            --bear-red: #ff1744;
+            --gold-accent: #f59e0b;
+            --glow-green: rgba(0, 230, 118, 0.38);
+            --glow-red: rgba(255, 23, 68, 0.32);
+            --text-white: #ffffff;
+            --text-silver: #cbd5e1;
+            --text-muted: #7c8da6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            min-height: 100vh;
+            background: var(--bg-void);
+            color: var(--text-white);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Trading Terminal Grid + Bull/Bear Ambient Glow */
+        .ambient-aura {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 22% 24%, rgba(0, 230, 118, 0.16) 0%, transparent 52%),
+                radial-gradient(circle at 78% 35%, rgba(255, 23, 68, 0.14) 0%, transparent 52%),
+                linear-gradient(rgba(0, 230, 118, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 230, 118, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 28px 28px, 28px 28px;
+            z-index: 1;
+        }
+
+        .landing-card {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 405px;
+            background: linear-gradient(160deg, rgba(12, 18, 30, 0.94) 0%, rgba(6, 10, 18, 0.98) 100%);
+            border: 1px solid rgba(0, 230, 118, 0.32);
+            border-right-color: rgba(245, 158, 11, 0.35);
+            border-bottom-color: rgba(0, 230, 118, 0.25);
+            border-radius: 34px;
+            padding: 34px 24px 28px;
+            text-align: center;
+            box-shadow: 
+                0 30px 70px rgba(0, 0, 0, 0.94),
+                -6px 0 32px rgba(0, 230, 118, 0.12),
+                6px 0 32px rgba(255, 23, 68, 0.10);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        /* Animated Live Candlestick Background Strip */
+        .candle-bg-strip {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            right: 0;
+            height: 110px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            padding: 0 18px;
+            opacity: 0.22;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .candle {
+            position: relative;
+            width: 7px;
+            border-radius: 2px;
+            animation: candlePulse 3.2s infinite ease-in-out alternate;
+        }
+        .candle::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1.5px;
+            background: inherit;
+        }
+        .candle.bull {
+            background: var(--bull-green);
+            box-shadow: 0 0 8px var(--glow-green);
+        }
+        .candle.bear {
+            background: var(--bear-red);
+            box-shadow: 0 0 8px var(--glow-red);
+        }
+
+        .c1 { height: 28px; margin-bottom: 14px; animation-delay: 0.1s; }
+        .c1::before { top: -10px; bottom: -8px; }
+        .c2 { height: 42px; margin-bottom: 22px; animation-delay: 0.4s; }
+        .c2::before { top: -12px; bottom: -10px; }
+        .c3 { height: 24px; margin-bottom: 18px; animation-delay: 0.7s; }
+        .c3::before { top: -8px; bottom: -12px; }
+        .c4 { height: 54px; margin-bottom: 26px; animation-delay: 0.2s; }
+        .c4::before { top: -14px; bottom: -8px; }
+        .c5 { height: 32px; margin-bottom: 34px; animation-delay: 0.5s; }
+        .c5::before { top: -9px; bottom: -11px; }
+        .c6 { height: 62px; margin-bottom: 38px; animation-delay: 0.8s; }
+        .c6::before { top: -15px; bottom: -10px; }
+        .c7 { height: 36px; margin-bottom: 28px; animation-delay: 0.3s; }
+        .c7::before { top: -10px; bottom: -14px; }
+        .c8 { height: 68px; margin-bottom: 32px; animation-delay: 0.6s; }
+        .c8::before { top: -16px; bottom: -9px; }
+
+        @keyframes candlePulse {
+            0% { transform: scaleY(0.92); opacity: 0.75; }
+            100% { transform: scaleY(1.08); opacity: 1; }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Emerald & Gold Ring Profile Avatar */
+        .avatar-energy-wrap {
+            position: relative;
+            width: 134px;
+            height: 134px;
+            margin: 0 auto 18px auto;
+            border-radius: 50%;
+            padding: 3.5px;
+            background: linear-gradient(135deg, var(--bull-green) 0%, #00b0ff 50%, var(--gold-accent) 100%);
+            box-shadow: 
+                0 0 28px var(--glow-green),
+                0 0 18px rgba(245, 158, 11, 0.25);
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #04070d;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 3px;
+            right: 4px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--bull-green), var(--bull-dark));
+            border-radius: 50%;
+            border: 3px solid #09101c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 14px var(--glow-green);
+            z-index: 4;
+        }
+        .verified-badge svg { width: 14px; height: 14px; fill: #04070d; }
+
+        /* Mini Live Candlestick Badge */
+        .mini-chart-bar {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 230, 118, 0.10);
+            border: 1px solid rgba(0, 230, 118, 0.35);
+            color: #a7f3d0;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 12px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--bull-green);
+            box-shadow: 0 0 8px var(--bull-green);
+            animation: blink 1.4s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        .channel-title {
+            font-size: 27px;
+            font-weight: 950;
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+            margin: 0 0 8px 0;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #ffffff 15%, #6ee7b7 55%, #fde68a 90%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 12px rgba(0, 230, 118, 0.25));
+        }
+
+        /* Inline SVG Candlestick Graphic Strip */
+        .candle-divider {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .candle-divider svg {
+            height: 26px;
+            width: 190px;
+            filter: drop-shadow(0 0 6px rgba(0, 230, 118, 0.35));
+        }
+
+        .features-box {
+            background: rgba(8, 13, 24, 0.82);
+            border: 1px solid rgba(0, 230, 118, 0.22);
+            border-left: 4px solid var(--bull-green);
+            border-radius: 18px;
+            padding: 18px 16px;
+            text-align: left;
+            margin-bottom: 24px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-silver);
+            margin-bottom: 11px;
+        }
+        .feature-item:last-child { margin-bottom: 0; }
+
+        .feature-item span {
+            color: var(--bull-green);
+            margin-right: 10px;
+            font-size: 15px;
+            text-shadow: 0 0 10px var(--glow-green);
+        }
+
+        .feature-item b {
+            color: #ffffff;
+            margin-left: 4px;
+        }
+
+        .cta-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .bot-bait-node {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0.01;
+            overflow: hidden;
+        }
+
+        /* Bullish Emerald-to-Cyan High-Contrast CTA */
+        .cta-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            width: 100% !important;
+            padding: 18px 12px !important;
+            border-radius: 50px !important;
+            border: none !important;
+            cursor: pointer;
+            text-decoration: none !important;
+            background: linear-gradient(90deg, #00e676 0%, #00c853 55%, #00b0ff 100%) !important;
+            box-shadow: 
+                0 12px 30px rgba(0, 230, 118, 0.35),
+                0 6px 20px rgba(0, 176, 255, 0.25),
+                inset 0 2px 4px rgba(255, 255, 255, 0.7) !important;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        .cta-btn:active {
+            transform: scale(0.97);
+        }
+
+        .cta-btn-text {
+            color: #03120a !important;
+            font-size: 19px !important;
+            font-weight: 950 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            display: inline-block !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+        }
+
+        .cta-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+            transform: skewX(-20deg);
+            animation: sheen 3.5s infinite ease-in-out;
+        }
+
+        @keyframes sheen {
+            0% { left: -100%; }
+            18% { left: 120%; }
+            100% { left: 120%; }
+        }
+
+        .tg-round-ic {
+            width: 32px;
+            height: 32px;
+            background: #04130b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+            flex-shrink: 0;
+        }
+        .tg-round-ic svg {
+            width: 16px;
+            height: 16px;
+            fill: #00e676;
+            margin-right: 1px;
+        }
+
+        .note-text {
+            margin-top: 16px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            letter-spacing: 0.4px;
+            font-weight: 600;
+        }
+
+        .managed-by-pill {
+            margin-top: 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px 6px 6px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(10, 16, 28, 0.88);
+            color: rgba(226, 232, 240, 0.78);
+            border: 1px solid rgba(0, 230, 118, 0.28);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .managed-by-pill:hover {
+            border-color: rgba(0, 230, 118, 0.65);
+            transform: translateY(-1px);
+        }
+        .managed-by-pill b {
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        .aj-logo-svg {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: block;
+            flex-shrink: 0;
+            padding: 2px;
+        }
+
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.78);
+            z-index: 9999;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-body {
+            background: #0c1422;
+            width: 100%;
+            max-width: 440px;
+            border-top-left-radius: 26px;
+            border-top-right-radius: 26px;
+            border-top: 1px solid rgba(0, 230, 118, 0.4);
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .modal-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+        }
+
+        .modal-action {
+            display: block;
+            width: 100%;
+            padding: 15px 0;
+            border-radius: 14px;
+            font-size: 14.5px;
+            font-weight: 800;
+            text-decoration: none;
+            margin-bottom: 9px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-open-app {
+            background: linear-gradient(90deg, var(--bull-green), #00b0ff);
+            color: #03120a;
+        }
+
+        .btn-copy-link {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-aura"></div>
+
+    <div class="landing-card">
+        <!-- Live Trading Candlesticks Backdrop -->
+        <div class="candle-bg-strip" aria-hidden="true">
+            <div class="candle bull c1"></div>
+            <div class="candle bear c2"></div>
+            <div class="candle bull c3"></div>
+            <div class="candle bull c4"></div>
+            <div class="candle bear c5"></div>
+            <div class="candle bull c6"></div>
+            <div class="candle bear c7"></div>
+            <div class="candle bull c8"></div>
+        </div>
+
+        <div class="card-content">
+            <div class="avatar-energy-wrap">
+                <div class="avatar-inner">
+                    <img src="https://i.ibb.co/LdPftXbZ/image.jpg" alt="TRADE X VISHAL" class="avatar-img">
+                </div>
+                <div class="verified-badge">
+                    <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                </div>
+            </div>
+
+            <div class="mini-chart-bar">
+                <span class="live-dot"></span> BINOMO &amp; BINARY TRADER
+            </div>
+
+            <h1 class="channel-title">TRADE X VISHAL</h1>
+
+            <!-- Bullish & Bearish Candlestick Divider -->
+            <div class="candle-divider" aria-hidden="true">
+                <svg viewBox="0 0 200 28" fill="none">
+                    <!-- Bullish Candle 1 -->
+                    <line x1="20" y1="3" x2="20" y2="25" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="16" y="8" width="8" height="12" rx="1.5" fill="#00e676"/>
+                    <!-- Bearish Candle 2 -->
+                    <line x1="42" y1="5" x2="42" y2="26" stroke="#ff1744" stroke-width="1.5"/>
+                    <rect x="38" y="10" width="8" height="10" rx="1.5" fill="#ff1744"/>
+                    <!-- Bullish Candle 3 -->
+                    <line x1="64" y1="2" x2="64" y2="23" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="60" y="6" width="8" height="13" rx="1.5" fill="#00e676"/>
+                    <!-- Bullish Breakout Candle 4 -->
+                    <line x1="86" y1="1" x2="86" y2="20" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="82" y="4" width="8" height="12" rx="1.5" fill="#00e676"/>
+                    <!-- Bearish Pullback Candle 5 -->
+                    <line x1="108" y1="4" x2="108" y2="24" stroke="#ff1744" stroke-width="1.5"/>
+                    <rect x="104" y="8" width="8" height="11" rx="1.5" fill="#ff1744"/>
+                    <!-- Bullish Surge Candle 6 -->
+                    <line x1="130" y1="2" x2="130" y2="22" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="126" y="5" width="8" height="13" rx="1.5" fill="#00e676"/>
+                    <!-- Bullish Momentum Candle 7 -->
+                    <line x1="152" y1="1" x2="152" y2="19" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="148" y="3" width="8" height="12" rx="1.5" fill="#00e676"/>
+                    <!-- Bullish Top Candle 8 -->
+                    <line x1="174" y1="1" x2="174" y2="17" stroke="#00e676" stroke-width="1.5"/>
+                    <rect x="170" y="2" width="8" height="11" rx="1.5" fill="#00e676"/>
+                </svg>
+            </div>
+
+            <div class="features-box">
+                <div class="feature-item"><span>📈</span> High-Accuracy <b>Binomo &amp; Binary Signals</b></div>
+                <div class="feature-item"><span>⏱️</span> Live 1-Min <b>Candlestick &amp; Bug Setups</b></div>
+                <div class="feature-item"><span>⚡</span> Daily Compounding &amp; <b>VIP Sessions</b></div>
+            </div>
+
+            <div class="cta-wrap" id="cta-container">
+                <button type="button" class="cta-btn" id="join-btn">
+                    <span class="tg-round-ic">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-1-.65-.35-1 .22-1.62.15-.15 2.71-2.48 2.76-2.7.01-.03.01-.14-.05-.2-.06-.06-.14-.04-.2-.03-.08.01-1.29.82-3.65 2.42-.35.24-.66.36-.94.35-.31-.01-.91-.18-1.36-.32-.55-.18-1-.28-.96-.59.02-.16.24-.33.66-.51 2.58-1.12 4.31-1.87 5.17-2.23 2.46-1 2.97-1.17 3.31-1.18.07 0 .24.02.35.11.09.08.12.18.13.26 0 .05.01.18 0 .27z"/>
+                        </svg>
+                    </span>
+                    <span class="cta-btn-text" id="cta-label">JOIN TELEGRAM</span>
+                </button>
+            </div>
+
+            <p class="note-text">Free Access · Opens Directly in Telegram App</p>
+
+            <a class="managed-by-pill" href="https://t.me/+LlCfsKTU90s1YWI1" target="_blank" rel="noopener">
+                <svg class="aj-logo-svg" viewBox="0 0 100 100" fill="none">
+                    <defs>
+                        <linearGradient id="ajBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00bcd4"/>
+                            <stop offset="100%" stop-color="#0066cc"/>
+                        </linearGradient>
+                        <linearGradient id="ajGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00e676"/>
+                            <stop offset="100%" stop-color="#008a3d"/>
+                        </linearGradient>
+                    </defs>
+                    <polygon points="12,78 34,78 52,22 36,22" fill="url(#ajBlue)"/>
+                    <polygon points="28,78 44,78 62,22 48,22" fill="url(#ajBlue)"/>
+                    <polygon points="56,18 68,18 88,78 50,66 70,58" fill="url(#ajGreen)"/>
+                </svg>
+                Managed by <b>AJ Ads Agency</b>
+            </a>
+        </div>
+    </div>
+
+    <!-- Fallback Modal -->
+    <div id="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-title">Telegram Didn't Open?</div>
+            <div class="modal-desc">Tap below to open the channel directly or copy the invite link.</div>
+            <a id="modal-app-link" class="modal-action btn-open-app" href="#">Open in Telegram</a>
+            <button id="modal-copy-btn" class="modal-action btn-copy-link">Copy Invite Link</button>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        "use strict";
+
+        var PIXEL_ID = "2241109723952937";
+        // XOR-obfuscated invite slug ("bcu4OQZ6tnAxODk1" ^ key 42)
+        var ENC_SLUG = [72, 73, 95, 30, 101, 123, 112, 28, 94, 68, 107, 82, 101, 110, 65, 27];
+        var XOR_KEY = 42;
+
+        function decodeSlug() {
+            var out = "";
+            for (var i = 0; i < ENC_SLUG.length; i++) {
+                out += String.fromCharCode(ENC_SLUG[i] ^ XOR_KEY);
+            }
+            return out;
+        }
+
+        var pageLoadTs = Date.now();
+        var trapState = {
+            jailed: false,
+            jailReason: "",
+            pixelReady: false,
+            humanGestureCount: 0,
+            pointerDownSeen: false,
+            pointerUpSeen: false,
+            touchMoved: false,
+            subscribeFired: false,
+            tapStage: 0
+        };
+
+        // =========================================================================
+        // LAYER 1: JS HARDWARE, WEBGL & AUTOMATION FINGERPRINT TRAP
+        // =========================================================================
+        function runEnvironmentTrap() {
+            var ua = navigator.userAgent || "";
+            if (/bot|crawl|spider|slurp|facebookexternalhit|mediapartners|headless|phantom|selenium|puppeteer|playwright|lighthouse|bingpreview|yandex|baidu|curl|wget|python|node/i.test(ua)) {
+                return "crawler_ua";
+            }
+            if (navigator.webdriver === true) return "webdriver_flag";
+            if (window._phantom || window.__nightmare || window.callPhantom || window.__selenium_unwrapped || window.__fxdriver_unwrapped) {
+                return "automation_global";
+            }
+            if (!navigator.languages || navigator.languages.length === 0) return "empty_languages";
+            if (window.outerWidth === 0 && window.outerHeight === 0) return "zero_viewport";
+            if (navigator.hardwareConcurrency === 0) return "zero_cores";
+
+            try {
+                var canvas = document.createElement("canvas");
+                var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                if (gl) {
+                    var dbg = gl.getExtension("WEBGL_debug_renderer_info");
+                    if (dbg) {
+                        var renderer = (gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) || "").toLowerCase();
+                        if (/swiftshader|llvmpipe|mesa offscreen|virtualbox|vmware/i.test(renderer)) {
+                            return "headless_gpu";
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            return null;
+        }
+
+        var envResult = runEnvironmentTrap();
+        if (envResult) {
+            trapState.jailed = true;
+            trapState.jailReason = envResult;
+        }
+
+        function isMetaTestSession() {
+            return window.location.search.indexOf("fb_pixel_id=") !== -1 ||
+                   window.name.indexOf("fb_event_setup") !== -1;
+        }
+
+        // =========================================================================
+        // LAYER 2: DYNAMIC JS DOM HONEYPOT & PROTOTYPE TAMPER TRAP
+        // =========================================================================
+        (function injectJsHoneypots() {
+            var baitLink = document.createElement("a");
+            baitLink.href = "https://t.me/+verify_session_bot_trap";
+            baitLink.textContent = "Join Telegram Official";
+            baitLink.className = "bot-bait-node";
+            baitLink.setAttribute("tabindex", "-1");
+            baitLink.setAttribute("aria-hidden", "true");
+            baitLink.addEventListener("click", function(e) {
+                e.preventDefault();
+                trapState.jailed = true;
+                trapState.jailReason = "honeypot_link_clicked";
+            });
+            document.body.appendChild(baitLink);
+
+            var origClick = HTMLElement.prototype.click;
+            HTMLElement.prototype.click = function() {
+                if (this && (this.id === "join-btn" || this === baitLink)) {
+                    trapState.jailed = true;
+                    trapState.jailReason = "synthetic_proto_click";
+                    return;
+                }
+                return origClick.apply(this, arguments);
+            };
+        })();
+
+        // =========================================================================
+        // LAYER 3: BIOMETRIC TOUCH/POINTER SEQUENCE & GATED PIXEL LOADER
+        // =========================================================================
+        function generateEventId(prefix) {
+            return prefix + "_" + Date.now() + "_" + Math.random().toString(36).substring(2, 10);
+        }
+
+        function recordHumanTelemetry(e) {
+            if (trapState.jailed) return;
+            if (e && e.isTrusted === false && !isMetaTestSession()) {
+                trapState.jailed = true;
+                trapState.jailReason = "untrusted_event";
+                return;
+            }
+
+            trapState.humanGestureCount++;
+            if (e) {
+                if (e.type === "pointerdown" || e.type === "touchstart") trapState.pointerDownSeen = true;
+                if (e.type === "pointerup" || e.type === "touchend") trapState.pointerUpSeen = true;
+                if (e.type === "touchmove" || e.type === "mousemove" || e.type === "scroll") trapState.touchMoved = true;
+            }
+
+            bootMetaPixel();
+        }
+
+        function bootMetaPixel() {
+            if (trapState.pixelReady || trapState.jailed) return;
+            trapState.pixelReady = true;
+
+            !function(f,b,e,v,n,t,s) {
+                if(f.fbq) return;
+                n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s);
+            }(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+
+            fbq("init", PIXEL_ID);
+            fbq("track", "PageView", {}, { eventID: generateEventId("pv") });
+        }
+
+        if (isMetaTestSession()) {
+            trapState.jailed = false;
+            bootMetaPixel();
+        } else {
+            ["touchstart", "touchmove", "touchend", "pointerdown", "pointerup", "scroll", "mousemove"].forEach(function(evt) {
+                window.addEventListener(evt, recordHumanTelemetry, { passive: true });
+            });
+        }
+
+        // =========================================================================
+        // LAYER 4: DELAYED PARAMETER SCRUBBER
+        // =========================================================================
+        window.addEventListener("load", function() {
+            setTimeout(function() {
+                try {
+                    if (!window.history || !history.replaceState || !window.URL) return;
+                    var u = new URL(window.location.href);
+                    var stripParams = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "ad_id", "campaign_id", "adset_id"];
+                    var changed = false;
+                    stripParams.forEach(function(k) {
+                        if (u.searchParams.has(k)) {
+                            u.searchParams.delete(k);
+                            changed = true;
+                        }
+                    });
+                    if (changed) history.replaceState(null, document.title, u.pathname + u.hash);
+                } catch (err) {}
+            }, 3000);
+        });
+
+        // =========================================================================
+        // LAYER 5: CLICK PHYSICS, DWELL GUARD & BOT JAIL ROUTING
+        // =========================================================================
+        var joinBtn = document.getElementById("join-btn");
+        var ctaLabel = document.getElementById("cta-label");
+        var overlay = document.getElementById("modal-overlay");
+        var modalAppLink = document.getElementById("modal-app-link");
+        var modalCopyBtn = document.getElementById("modal-copy-btn");
+
+        joinBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+
+            if (!e.isTrusted && !isMetaTestSession()) {
+                trapState.jailed = true;
+                trapState.jailReason = "untrusted_cta_click";
+            }
+
+            var rect = joinBtn.getBoundingClientRect();
+            var insideBox = (e.clientX >= rect.left && e.clientX <= rect.right &&
+                             e.clientY >= rect.top && e.clientY <= rect.bottom &&
+                             (e.clientX !== 0 || e.clientY !== 0));
+
+            if (!insideBox && !isMetaTestSession()) {
+                trapState.jailed = true;
+                trapState.jailReason = "impossible_coordinates";
+            }
+
+            if (trapState.jailed && !isMetaTestSession()) {
+                ctaLabel.textContent = "VERIFYING SESSION...";
+                setTimeout(function() {
+                    window.location.replace("https://t.me/");
+                }, 1500);
+                return;
+            }
+
+            var dwellTime = Date.now() - pageLoadTs;
+            trapState.tapStage++;
+
+            if (!isMetaTestSession() && (dwellTime < 1300 || !trapState.pointerDownSeen) && trapState.tapStage === 1) {
+                trapState.pointerDownSeen = true;
+                bootMetaPixel();
+                ctaLabel.textContent = "TAP AGAIN TO JOIN";
+                joinBtn.style.opacity = "0.9";
+                setTimeout(function() { joinBtn.style.opacity = "1"; }, 160);
+                return;
+            }
+
+            if (!trapState.subscribeFired && (dwellTime >= 1100 || isMetaTestSession())) {
+                trapState.subscribeFired = true;
+                if (typeof fbq === "function") {
+                    fbq("track", "Subscribe", {
+                        content_name: "TRADE X VISHAL Binary Join"
+                    }, {
+                        eventID: generateEventId("sub")
+                    });
+                }
+            }
+
+            var realSlug = decodeSlug();
+            var webFallback = "https://t.me/+" + realSlug;
+            var tgDeepLink = "tg://join?invite=" + realSlug;
+            var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            setTimeout(function() {
+                if (isMobile) {
+                    var clickStart = Date.now();
+                    var switchedApp = false;
+
+                    var onVisibility = function() {
+                        if (document.hidden) switchedApp = true;
+                    };
+                    document.addEventListener("visibilitychange", onVisibility, { once: true });
+
+                    window.location.href = tgDeepLink;
+
+                    setTimeout(function() {
+                        document.removeEventListener("visibilitychange", onVisibility);
+                        if (!switchedApp && !document.hidden && (Date.now() - clickStart < 3500)) {
+                            modalAppLink.href = webFallback;
+                            overlay.style.display = "flex";
+                        }
+                    }, 2000);
+                } else {
+                    window.location.href = webFallback;
+                }
+            }, 350);
+        });
+
+        modalCopyBtn.addEventListener("click", function() {
+            var webFallback = "https://t.me/+" + decodeSlug();
+            navigator.clipboard.writeText(webFallback).then(function() {
+                modalCopyBtn.textContent = "Copied to Clipboard!";
+                setTimeout(function() { modalCopyBtn.textContent = "Copy Invite Link"; }, 2000);
+            }).catch(function() {
+                window.location.href = webFallback;
+            });
+        });
+
+        overlay.addEventListener("click", function(e) {
+            if (e.target === overlay) overlay.style.display = "none";
+        });
+    })();
+    </script>
+</body>
+</html>
